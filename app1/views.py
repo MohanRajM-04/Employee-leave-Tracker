@@ -7,7 +7,7 @@ from employee import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login as loginUser, logout
 from django.contrib.auth.decorators import login_required
-from app1.models import Employee, Employee_leave
+from app1.models import Employee, Employee_leave, holiday
 from app1.forms import Employee_leave_form, update_emp_details
 
 # Create your views here.
@@ -44,24 +44,16 @@ def login(request):
 def signup(request):
     if request.method == "POST":
         employeename = request.POST['employeename']
-        # username = request.POST['username']
         email = request.POST['email']
-        # age = request.POST['age']
-        # gender = request.POST['gender']
-        # department = request.POST['department']
-        # company_name = request.POST['companyname']
-    #    leave_available = request.POST['leave_available']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
 
         if password1 == password2:
             if Employee.objects.filter(email=email).exists():
-           # if User.objects.filter(email=email).exists():   # user to check Exists details in data base to entered details by user
                 messages.info(request, "Email Id Exists...!!! Try Another...")
                 return redirect('signup')
 
             else:
-                #employee = Employee.objects.create(email=email, age=age, gender=gender, department=department, company_name=company_name)
                 user = User.objects.create_user(username=employeename, email=email, password=password2)
                 user.save()
                # employee.save()
@@ -102,12 +94,31 @@ def apply_leave(request):
         print(user)
         form = Employee_leave_form(request.POST)
         if form.is_valid():
-            print(form.cleaned_data)
-            leave = form.save(commit=False)
-            leave.user = user
-            leave.save()
-            print(leave)
+            date = request.POST['date']
+            # num= request.POST['reason']
+
+            print('********************', date, '*********************')
+            from datetime import datetime
+            import holidays
+            ind_holidays = holidays.India()
+            mm=int(date[0:2])
+            dd=int(date[3:5])
+            yyyy=int(date[-4:])
+            x = datetime(yyyy,mm,dd, 00, 00, 00, 0000)
+            print('Weekday Number:', x.weekday())
+            if x.weekday() == 5 or x.weekday() == 6:
+                pass
+            elif '%d-%d-%d'%(dd,mm,yyyy) in ind_holidays:
+                print('hi buddy')
+            else:
+                print(form.cleaned_data)
+                leave = form.save(commit=False)
+                leave.user = user
+                leave.save()
+                print(leave)
+                return redirect("home")
             return redirect("home")
+
         else:
             return render(request, 'index.html', context={'form': form, })
 
@@ -117,7 +128,6 @@ def delete_leave(request, id):
     Employee_leave.objects.get(pk=id).delete()
     return redirect('home')
 
-from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login')
 def update(request):

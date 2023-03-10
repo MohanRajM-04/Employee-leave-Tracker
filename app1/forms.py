@@ -7,13 +7,12 @@ class Employee_leave_form(ModelForm):
     class Meta:
         model = Employee_leave
 
-        fields = ['date','reason']
+        fields = ['date', 'reason']
 
 class update_emp_details(ModelForm):
     class Meta:
         model = Employee
-        fields = ['age','gender', 'email', 'department','company_name','leave_available']
-
+        fields = '__all__'
 
 
 

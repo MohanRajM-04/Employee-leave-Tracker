@@ -5,18 +5,18 @@ from django.contrib.auth.models import User
 
 
 class Employee(models.Model):
-    # status_choices = [
-    #     ('Male'),
-    #     ('Female'),
-    # ]
+    gender_choices = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    age = models.IntegerField()
-    gender = models.CharField(max_length=10) #choices=status_choices
+    age = models.PositiveIntegerField()
+    gender = models.CharField(max_length=10, choices=gender_choices)
     email = models.EmailField()
     department = models.CharField(max_length=500)
     company_name = models.CharField(max_length=500)
-    leave_available = models.CharField(max_length=500, null=True)
+    leave_available = models.PositiveIntegerField()
 
 class holiday(models.Model):
     date = models.DateField()

@@ -60,8 +60,8 @@ def signup(request):
 
                 # Email Generation Block
 
-                subject = ''
-                content = f'Hiii {employeename} Thank you for registering'
+                subject = 'Registration Confirmation'
+                content = f'Hi {employeename} Thank you for registering'
                 email_from = settings.EMAIL_HOST_USER
                 recipient_list = [email,]
                 email = EmailMessage(
@@ -94,26 +94,52 @@ def apply_leave(request):
         print(user)
         form = Employee_leave_form(request.POST)
         if form.is_valid():
-            date = request.POST['date']
-            # num= request.POST['reason']
+            start_date = request.POST['start_date']
+            end_date = request.POST['end_date']
 
-            print('********************', date, '*********************')
-            from datetime import datetime
-            import holidays
-            ind_holidays = holidays.India()
-            mm=int(date[0:2])
-            dd=int(date[3:5])
-            yyyy=int(date[-4:])
-            x = datetime(yyyy,mm,dd, 00, 00, 00, 0000)
-            print('Weekday Number:', x.weekday())
-            if x.weekday() == 5 or x.weekday() == 6:
-                pass
-            elif '%d-%d-%d'%(dd,mm,yyyy) in ind_holidays:
-                print('hi buddy')
-            else:
+            # comparison of dates
+            if end_date >= start_date:
+
+                from datetime import datetime
+                import datetime
+
+                # import holidays
+                # import pandas as pd
+                # import numpy as np
+
+                # date_df = {'Date': pd.date_range('2022-01-01', periods=365, freq='B')}
+                # df = pd.DataFrame(date_df)
+                # print(df)
+
+                mm = int(start_date[0:2])
+                dd = int(start_date[3:5])
+                yyyy = int(start_date[-4:])
+
+                mm_end = int(end_date[0:2])
+                dd_end = int(end_date[3:5])
+                yyyy_end = int(end_date[-4:])
+
+                start = datetime.date(yyyy, mm, dd)
+                end = datetime.date(yyyy_end, mm_end, dd_end)
+
+                daydiff = end.weekday() - start.weekday()
+
+                days = ((end - start).days - daydiff) / 7 * 5 + min(daydiff, 5) - (max(end.weekday() - 4, 0) % 5)
+
+#=================================================================================
+                # ind_holidays = holidays.India()
+                # x = datetime(yyyy,mm,dd, 00, 00, 00, 0000)
+                # print('Weekday Number:', x.weekday())
+                # if x.weekday() == 5 or x.weekday() == 6:
+                #     print('Saturday and sunday')
+                # elif '%d-%d-%d'%(dd,mm,yyyy) in ind_holidays:
+                #     print('Government Holiday')
+#=================================================================================
+
                 print(form.cleaned_data)
                 leave = form.save(commit=False)
                 leave.user = user
+                leave.days = days
                 leave.save()
                 print(leave)
                 return redirect("home")

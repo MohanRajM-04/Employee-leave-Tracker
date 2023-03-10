@@ -23,8 +23,10 @@ class holiday(models.Model):
     name = models.CharField(max_length=500)
 
 class Employee_leave(models.Model):
-    date = models.DateField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     reason = models.CharField(max_length=500)
+    days = models.PositiveIntegerField(null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 

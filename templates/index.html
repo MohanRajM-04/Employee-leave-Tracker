@@ -36,7 +36,9 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Date</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Total Days</th>
                   <th>Reason</th>
                   <th>Delete Leave</th>
                 </tr>
@@ -47,7 +49,9 @@
                 {% for l in leave %}
                 <tr>
                   <td>{{forloop.counter}}</td>
-                  <td>{{l.date}}</td>
+                  <td>{{l.start_date}}</td>
+                  <td>{{l.end_date}}</td>
+                  <td>{{l.days}}</td>
                   <td>{{l.reason}}</td>
 
                   <td>
